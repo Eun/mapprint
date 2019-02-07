@@ -209,6 +209,24 @@ func runesAreEqual(a, b []rune) bool {
 	return true
 }
 
+func runesLower(a, b []rune) bool {
+	al := len(a)
+	bl := len(b)
+
+	if al < bl {
+		return true
+	} else if al > bl {
+		return false
+	}
+
+	for i := 0; i < al; i++ {
+		if a[i] < b[i] {
+			return true
+		}
+	}
+	return false
+}
+
 func (v bindings) Get(key []rune) *binding {
 	for i := len(v) - 1; i >= 0; i-- {
 		if runesAreEqual(v[i].Key, key) {
@@ -250,8 +268,7 @@ func (printer *Printer) makeBindings(values ...interface{}) (bindings, error) {
 
 	// sort bindings
 	sort.Slice(binds, func(i, j int) bool {
-		// todo: use runes here
-		return strings.Compare(string(binds[i].Key), string(binds[j].Key)) < 0
+		return runesLower(binds[i].Key, binds[j].Key)
 	})
 
 	return binds, nil

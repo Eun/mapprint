@@ -6,9 +6,12 @@ go get github.com/Eun/mapprint
 ```
 
 ```go
-// prints `Hello Joe!'
-mapprint.Printf("Hello %user!", map[string]string{
-    "user": "Joe",
+// prints `[14:01:08.005674] Database initialized'
+mapprint.Printf("[%0H:%02m:%02s.%06ms] Database initialized", map[string]string{
+    "H": 14,
+    "m": 1,
+    "s": 8,
+    "ms": 5674,
 })
 ```
 

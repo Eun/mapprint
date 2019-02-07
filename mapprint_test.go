@@ -108,13 +108,13 @@ func TestTypes(t *testing.T) {
 		}
 		require.Equal(t, "Foo % Bar", p.Sprintf("Foo % Bar"))
 		require.Equal(t, "Foo % Bar", p.Sprintf("Foo %% Bar"))
-		
+
 		require.Equal(t, "Foo 100% Bar", p.Sprintf("Foo %Percent% Bar"))
 		require.Equal(t, "Foo 100% Bar", p.Sprintf("Foo %Percent%% Bar"))
-	
+
 		require.Equal(t, "Foo %100% Bar", p.Sprintf("Foo %%%Percent% Bar"))
 		require.Equal(t, "Foo %100% Bar", p.Sprintf("Foo %%%Percent%% Bar"))
-	
+
 		require.Equal(t, "Foo%100%Bar", p.Sprintf("Foo%%%Percent%%Bar"))
 		require.Equal(t, "Foo %%%%%%%100 Bar", p.Sprintf("Foo %%10Percent Bar"))
 	})
@@ -462,5 +462,47 @@ func TestMakeBindings(t *testing.T) {
 		require.Equal(t, "Value1", defaultReflectPrinter.Sprint(binds.Get([]rune("Key1")).Value))
 		require.Equal(t, "Value2", defaultReflectPrinter.Sprint(binds.Get([]rune("Key2")).Value))
 		// require.Equal(t, "", defaultReflectPrinter.Sprint(binds.Get([]rune("Key3")).Value))
+	})
+
+	t.Run("In instance", func(t *testing.T) {
+		t.Run("Correct order initialized", func(t *testing.T) {
+			p := Printer{
+				SuppressErrors: true,
+				DefaultBindings: map[string]interface{}{
+					"Key1": "Value1",
+					"Key2": "Value2",
+				},
+			}
+			binds, err := p.makeBindings(map[string]string{
+				"Key3": "Value3",
+				"Key4": "Value4",
+			})
+			require.NoError(t, err)
+
+			require.Equal(t, "Key1", string(binds[0].Key))
+			require.Equal(t, "Key2", string(binds[1].Key))
+			require.Equal(t, "Key3", string(binds[2].Key))
+			require.Equal(t, "Key4", string(binds[3].Key))
+		})
+
+		t.Run("InCorrect order initialized", func(t *testing.T) {
+			p := Printer{
+				SuppressErrors: true,
+				DefaultBindings: map[string]interface{}{
+					"Key2": "Value2",
+					"Key3": "Value3",
+				},
+			}
+			binds, err := p.makeBindings(map[string]string{
+				"Key4": "Value4",
+				"Key1": "Value1",
+			})
+			require.NoError(t, err)
+
+			require.Equal(t, "Key1", string(binds[0].Key))
+			require.Equal(t, "Key2", string(binds[1].Key))
+			require.Equal(t, "Key3", string(binds[2].Key))
+			require.Equal(t, "Key4", string(binds[3].Key))
+		})
 	})
 }
