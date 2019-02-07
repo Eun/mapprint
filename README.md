@@ -7,7 +7,7 @@ go get github.com/Eun/mapprint
 
 ```go
 // prints `[14:01:08.005674] Database initialized'
-mapprint.Printf("[%0H:%02m:%02s.%06ms] Database initialized", map[string]string{
+mapprint.Printf("[%0H:%02m:%02s.%06ms] Database initialized", map[string]interface{}{
     "H": 14,
     "m": 1,
     "s": 8,
