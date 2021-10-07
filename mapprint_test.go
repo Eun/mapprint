@@ -293,7 +293,7 @@ func TestNoSuppressErrors(t *testing.T) {
 		p.Sprintf("%Key1", 1)
 	})
 
-	//ptr binding
+	// ptr binding
 	require.Panics(t, func() {
 		type st struct {
 			Key1 string
@@ -416,52 +416,6 @@ func TestMakeBindings(t *testing.T) {
 
 		require.Equal(t, "Value1", defaultReflectPrinter.Sprint(binds.Get([]rune("Key1")).Value))
 		require.Equal(t, "Value2", defaultReflectPrinter.Sprint(binds.Get([]rune("Key2")).Value))
-	})
-
-	t.Run("Struct embedded", func(t *testing.T) {
-		type embedded struct {
-			Key3 string
-		}
-		type st struct {
-			Key1 string
-			Key2 string
-			embedded
-		}
-		binds, err := makeBindings(reflect.ValueOf(st{
-			Key1: "Value1",
-			Key2: "Value2",
-			embedded: embedded{
-				Key3: "Value3",
-			},
-		}))
-		require.NoError(t, err)
-
-		require.Equal(t, "Value1", defaultReflectPrinter.Sprint(binds.Get([]rune("Key1")).Value))
-		require.Equal(t, "Value2", defaultReflectPrinter.Sprint(binds.Get([]rune("Key2")).Value))
-		// require.Equal(t, "Value3", defaultReflectPrinter.Sprint(binds.Get([]rune("Key3")).Value))
-	})
-
-	t.Run("Struct Child", func(t *testing.T) {
-		type st2 struct {
-			Key3 string
-		}
-		type st struct {
-			Key1 string
-			Key2 string
-			Key3 st2
-		}
-		binds, err := makeBindings(reflect.ValueOf(st{
-			Key1: "Value1",
-			Key2: "Value2",
-			Key3: st2{
-				Key3: "Value3",
-			},
-		}))
-		require.NoError(t, err)
-
-		require.Equal(t, "Value1", defaultReflectPrinter.Sprint(binds.Get([]rune("Key1")).Value))
-		require.Equal(t, "Value2", defaultReflectPrinter.Sprint(binds.Get([]rune("Key2")).Value))
-		// require.Equal(t, "", defaultReflectPrinter.Sprint(binds.Get([]rune("Key3")).Value))
 	})
 
 	t.Run("In instance", func(t *testing.T) {
